@@ -5,7 +5,7 @@ namespace ktJobs.Api.Data;
 
 public class JobsDbContext : DbContext
 {
-    public DbSet<JobListing> Jobs => Set<JobListing>();
+    public DbSet<JobListingDto> Jobs => Set<JobListingDto>();
     
     public JobsDbContext(DbContextOptions<JobsDbContext> options)
         : base(options) { }
