@@ -1,9 +1,10 @@
-using ktJobs.Api.Domain;
+namespace ktJobs.Api.Domain;
 
-namespace ktJobs.Api.DTOs;
-
-public class JobListing
+public class JobListingDto
 {
+    public int Id { get; set; }
+    public string Source { get; set; } = string.Empty;
+    public string SourceJobId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Company { get; set; } = string.Empty;
     public string Location { get; set; } = string.Empty;
@@ -17,3 +18,5 @@ public class JobListing
     public bool IsHybrid { get; set; }
     public JobStatus Status { get; set; } = JobStatus.New;
 }
+
+public enum JobStatus {New, Ignored, Applied, Saved}
