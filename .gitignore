@@ -1,0 +1,66 @@
+############################
+# .NET
+############################
+
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / VS / VS Code
+.vs/
+.vscode/
+.idea/
+
+# Publish output
+publish/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Dotnet tools
+.toolstargets
+*.DotSettings.user
+
+# Secrets
+secrets.json
+appsettings.*.json
+
+# Logs
+*.log
+
+############################
+# Vite / Node / Frontend
+############################
+
+node_modules/
+dist/
+dist-ssr/
+coverage/
+
+# env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vite cache
+.vite/
+.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS junk
+.DS_Store
+Thumbs.db

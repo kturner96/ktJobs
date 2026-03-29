@@ -1,0 +1,6 @@
+@ktJobs.Api_HostAddress = http://localhost:5027
+
+GET {{ktJobs.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
