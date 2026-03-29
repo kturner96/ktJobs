@@ -18,10 +18,24 @@ public class JobsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllJobs()
+    public async Task<ActionResult<IEnumerable<JobListingDto>>> GetAllJobs()
     {
         var jobs = await _db.Jobs.ToListAsync();
-        return Ok(jobs);
+
+        var result = jobs.Select(j => new JobListingDto
+        {
+            Id = j.Id,
+            Title = j.Title,
+            Company = j.Company,
+            Status = j.Status.ToString(),
+            PostedDate = j.PostedDate.ToString("yyyy-M-dd"),
+            Description = j.Description,
+            IsRemote = j.IsRemote,
+            Location = j.Location,
+            Salary = j.Salary,
+            Url = j.Url
+        });
+        return Ok(result);
     }
 
     [HttpGet("{id:int}")]
@@ -30,10 +44,22 @@ public class JobsController : ControllerBase
         var job = await _db.Jobs.FindAsync(id);
 
         if (job == null)
-        {
             return NotFound();
-        }
 
+        return Ok(job);
+    }
+
+    [HttpPatch("{id:int}/status")]
+    public async Task<ActionResult<JobListing>> UpdateJobStatus(int id, UpdateJobStatusRequest request)
+    {
+        var job = await _db.Jobs.FindAsync(id);
+
+        if (job == null)
+            return NotFound();
+
+        job.Status = request.Status;
+
+        await _db.SaveChangesAsync();
         return Ok(job);
     }
 }
