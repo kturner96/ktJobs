@@ -10,7 +10,7 @@ import JobsPage from './pages/JobsPage';
 export default function App() {
   return (
     <BrowserRouter>
-      <MantineProvider>
+      <MantineProvider defaultColorScheme='dark'>
         <Routes>
           <Route path='/' element={<Layout />}>
             <Route index element={<Home />} />

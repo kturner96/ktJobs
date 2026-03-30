@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import JobCard from '../components/JobCard';
+import { Grid, ScrollArea } from '@mantine/core';
 
 type JobListing = {
   jobId: number;
@@ -14,6 +16,7 @@ type JobListing = {
 export default function JobsPage() {
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [fetchError, setFetchError] = useState('');
+  const [selectedJob, setSelectedJob] = useState<JobListing | null>(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -36,16 +39,34 @@ export default function JobsPage() {
   }, []);
 
   return (
-    <div>
-      <div>
-        {jobs.map((job) => (
-          <div key={job.jobId}>
-            <h1>{job.title}</h1>
-            <h2>{job.company}</h2>
-            <h3>{job.location}</h3>
+    <div className='h-screen'>
+      <Grid>
+        <Grid.Col span={4}>
+          <ScrollArea.Autosize mah={900} type='never'>
+            {jobs.map((job: JobListing) => (
+              <div key={job.jobId} onClick={() => setSelectedJob(job)}>
+                <JobCard job={job} />
+              </div>
+            ))}
+          </ScrollArea.Autosize>
+        </Grid.Col>
+        <Grid.Col span={4}>
+          <div>
+            <div className='border rounded-xl p-4'>
+              {selectedJob ? (
+                <div>
+                  <h1>{selectedJob.title}</h1>
+                  <h2>{selectedJob.location}</h2>
+                  <h2>{selectedJob.company}</h2>
+                </div>
+              ) : (
+                <p>Select a job</p>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
+        </Grid.Col>
+      </Grid>
+
       {fetchError && <p>{fetchError}</p>}
     </div>
   );

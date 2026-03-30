@@ -7,7 +7,7 @@ export default function Layout() {
       <header>
         <Header />
       </header>
-      <main className='p-2 items-center text-center'>
+      <main className='p-10 items-center text-center'>
         <Outlet />
       </main>
     </>
