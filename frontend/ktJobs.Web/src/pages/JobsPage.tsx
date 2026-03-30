@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import JobCard from '../components/JobCard';
-import { Grid, ScrollArea, Space, Modal } from '@mantine/core';
+import { Grid, ScrollArea, Space, Modal, LoadingOverlay } from '@mantine/core';
 import Button from '../components/Button';
-import { useDisclosure } from '@mantine/hooks';
 
 type JobListing = {
-  jobId: number;
+  id: number;
   title: string;
   description: string;
   status: string;
@@ -20,9 +19,12 @@ export default function JobsPage() {
   const [fetchError, setFetchError] = useState('');
   const [selectedJob, setSelectedJob] = useState<JobListing | null>(null);
   const [opened, setOpened] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchJobs = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch('http://localhost:5027/api/jobs');
 
@@ -36,22 +38,61 @@ export default function JobsPage() {
         setFetchError('');
       } catch {
         setFetchError('Something went wrong.');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchJobs();
   }, []);
 
+  const updateJobStatus = async (jobId: number, newStatus: string) => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5027/api/jobs/${jobId}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ Status: newStatus }),
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server Error Detail:', errorText);
+        throw Error('Failed to update status');
+      }
+      const updatedJob = await response.json(); // Your backend returns the job object
+
+      setJobs((prevJobs) =>
+        prevJobs.map((job) => (job.id === jobId ? updatedJob : job)),
+      );
+      setSelectedJob(updatedJob);
+      setOpened(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className='h-screen'>
       <Grid>
         <Grid.Col span={4}>
-          <ScrollArea.Autosize mah={900} type='never'>
-            {jobs.map((job: JobListing) => (
-              <div key={job.jobId} onClick={() => setSelectedJob(job)}>
-                <JobCard job={job} />
-              </div>
-            ))}
-          </ScrollArea.Autosize>
+          {isLoading ? (
+            <LoadingOverlay />
+          ) : (
+            <ScrollArea.Autosize mah={900} type='never'>
+              {jobs.map((job: JobListing) => (
+                <div key={job.id} onClick={() => setSelectedJob(job)}>
+                  <JobCard job={job} />
+                </div>
+              ))}
+            </ScrollArea.Autosize>
+          )}
         </Grid.Col>
         <Grid.Col span={4}>
           <div>
@@ -83,7 +124,6 @@ export default function JobsPage() {
                       buttonText='Update Status'
                       url='#'
                       onClick={() => {
-                        setSelectedJob(selectedJob);
                         setOpened(true);
                       }}
                     />
@@ -102,6 +142,18 @@ export default function JobsPage() {
                         <p className='text-sm text-gray-500'>
                           Current status: {selectedJob.status}
                         </p>
+                        <Button
+                          buttonText='Applied'
+                          url='#'
+                          isUpdating
+                          onClick={() => {
+                            if (selectedJob?.id) {
+                              updateJobStatus(selectedJob.id, 'Applied');
+                            } else {
+                              console.error('No Job ID found!');
+                            }
+                          }}
+                        />
                       </div>
                     )}
                   </Modal>
