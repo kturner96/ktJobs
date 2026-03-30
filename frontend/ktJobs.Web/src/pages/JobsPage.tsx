@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import JobCard from '../components/JobCard';
-import { Grid, ScrollArea } from '@mantine/core';
+import { Grid, ScrollArea, Space, Modal } from '@mantine/core';
+import Button from '../components/Button';
+import { useDisclosure } from '@mantine/hooks';
 
 type JobListing = {
   jobId: number;
@@ -17,6 +19,7 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [fetchError, setFetchError] = useState('');
   const [selectedJob, setSelectedJob] = useState<JobListing | null>(null);
+  const [opened, setOpened] = useState(false);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -54,10 +57,54 @@ export default function JobsPage() {
           <div>
             <div className='border rounded-xl p-4'>
               {selectedJob ? (
-                <div>
-                  <h1>{selectedJob.title}</h1>
-                  <h2>{selectedJob.location}</h2>
-                  <h2>{selectedJob.company}</h2>
+                <div className='flex flex-col items-center'>
+                  <div>
+                    <section>
+                      <h1 className='text-2xl font-bold'>
+                        {selectedJob.title}
+                      </h1>
+                    </section>
+                    <section className='flex flex-row justify-center'>
+                      <h2>{selectedJob.location}</h2>
+                      <Space w='lg' />
+                      <p>|</p>
+                      <Space w='lg' />
+                      <h2>{selectedJob.company}</h2>
+                    </section>
+                    <p>{selectedJob.salary}</p>
+                  </div>
+                  <div className='my-10'>{selectedJob.description}</div>
+                  <div className='flex flex-row gap-6'>
+                    <Button
+                      buttonText='Original Posting'
+                      url={selectedJob.url}
+                    />
+                    <Button
+                      buttonText='Update Status'
+                      url='#'
+                      onClick={() => {
+                        setSelectedJob(selectedJob);
+                        setOpened(true);
+                      }}
+                    />
+                  </div>
+                  <Modal
+                    opened={opened}
+                    onClose={() => setOpened(false)}
+                    centered
+                    title='Update Status'
+                  >
+                    {selectedJob && (
+                      <div>
+                        <h1 className='text-lg font-semibold'>
+                          Update Status for {selectedJob.title}
+                        </h1>
+                        <p className='text-sm text-gray-500'>
+                          Current status: {selectedJob.status}
+                        </p>
+                      </div>
+                    )}
+                  </Modal>
                 </div>
               ) : (
                 <p>Select a job</p>
